@@ -1,0 +1,43 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/trusty64"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "easy-lotto-bench"
+    #vb.gui = true
+    vb.memory = "512"
+    vb.cpus = 1
+    # vb.customize ["modifyvm", :id, "--memory", "512"]
+  end
+
+  # config.vm.synced_folder "../", "/var/www", create: true, group: "www-data", owner: "www-data"
+  config.vm.synced_folder "../", "/webapp", create: true, group: "www-data", owner: "vagrant"
+
+  # config.ssh.username = 'root'
+  # config.ssh.password = 'vagrant'
+  # config.ssh.insert_key = 'true'
+
+  # Forward the Rails server default port to the host
+  config.vm.network :forwarded_port, guest: 3000, host: 3000
+  config.vm.network :forwarded_port, guest: 5432, host: 5432
+
+  config.vm.provision :shell, inline: $FixLocale, privileged: false
+  config.vm.provision :shell, inline: $FixLocale, privileged: true
+
+  config.vm.provision :shell, path: "install-rvm.sh", args: "stable", privileged: false
+  config.vm.provision :shell, path: "install-ruby.sh", args: "2.3.0", privileged: false
+  config.vm.provision :shell, path: "install-ruby.sh", args: "2.3.0 rails -v 4.2.7", privileged: false
+  config.vm.provision :shell, path: "install-postgres.sh", args: "9.5", privileged: true
+
+end
+
+$FixLocale = <<SCRIPT
+  if grep -Fq 'LC_CTYPE' ~/.bashrc; then
+    echo 'Locale already configured...'
+  else
+    echo "export LC_CTYPE=en_US.UTF-8" >> ~/.bashrc
+    echo "export LC_ALL=en_US.UTF-8" >> ~/.bashrc
+  fi
+SCRIPT
