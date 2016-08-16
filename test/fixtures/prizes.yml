@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  hits: 1
+  value: 1.5
+  game_id: 
+
+two:
+  hits: 1
+  value: 1.5
+  game_id: 

@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Draw date:</strong>
+  <%= @game.draw_date %>
+</p>
+
+<p>
+  <strong>Lottery:</strong>
+  <%= @game.lottery %>
+</p>
+
+<%= link_to 'Edit', edit_game_path(@game) %> |
+<%= link_to 'Back', games_path %>

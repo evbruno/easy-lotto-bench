@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Number:</strong>
+  <%= @draw.number %>
+</p>
+
+<p>
+  <strong>Game:</strong>
+  <%= @draw.game %>
+</p>
+
+<%= link_to 'Edit', edit_draw_path(@draw) %> |
+<%= link_to 'Back', draws_path %>

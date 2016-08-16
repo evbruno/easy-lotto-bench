@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @lottery.name %>
+</p>
+
+<p>
+  <strong>Abbrev:</strong>
+  <%= @lottery.abbrev %>
+</p>
+
+<p>
+  <strong>Source url:</strong>
+  <%= @lottery.source_url %>
+</p>
+
+<%= link_to 'Edit', edit_lottery_path(@lottery) %> |
+<%= link_to 'Back', lotteries_path %>

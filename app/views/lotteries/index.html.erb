@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Lotteries</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Abbrev</th>
+      <th>Source url</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @lotteries.each do |lottery| %>
+      <tr>
+        <td><%= lottery.name %></td>
+        <td><%= lottery.abbrev %></td>
+        <td><%= lottery.source_url %></td>
+        <td><%= link_to 'Show', lottery %></td>
+        <td><%= link_to 'Edit', edit_lottery_path(lottery) %></td>
+        <td><%= link_to 'Destroy', lottery, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Lottery', new_lottery_path %>

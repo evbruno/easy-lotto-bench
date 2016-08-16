@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Prizes</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Hits</th>
+      <th>Value</th>
+      <th>Game</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @prizes.each do |prize| %>
+      <tr>
+        <td><%= prize.hits %></td>
+        <td><%= prize.value %></td>
+        <td><%= prize.game %></td>
+        <td><%= link_to 'Show', prize %></td>
+        <td><%= link_to 'Edit', edit_prize_path(prize) %></td>
+        <td><%= link_to 'Destroy', prize, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Prize', new_prize_path %>
