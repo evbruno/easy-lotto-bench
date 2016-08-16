@@ -122,7 +122,7 @@ Percentage of the requests served within a certain time (ms)
 `$ bundle exec passenger start -p 3000 -e production`
 
 ```
-# aborted tests for now
+# not enough memory :(
 
 App 24754 stderr: Cannot allocate memory - fork(2)
 [ 2016-08-16 04:31:13.5151 24616/7f2ec6e18700 age/Cor/App/Implementation.cpp:304 ]: Could not spawn process for application /webapp: An error occurred while starting the web application. It exited before signalling successful startup back to Phusion Passenger.
