@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-$CurrentBox = (ENV['BOX_NAME'] || 'ubuntu').downcase
+$CurrentBox = (ENV['BOX_NAME'] || 'centos').downcase
 $PortOffset = (ENV['BOX_PORT_OFFSET'] || 0).to_i
 $CPUS       = (ENV['BOX_NUM_OF_CPUS'] || 1).to_i.abs
 $Memory     = (ENV['BOX_MEM'] || 512).to_i

@@ -2,6 +2,8 @@
 
 echo "Installing ruby. ARGS: $@"
 
+echo 'gem: --no-rdoc --no-ri' >> ~/.gemrc
+
 source $HOME/.rvm/scripts/rvm
 
 # TODO fixme
