@@ -5,6 +5,8 @@ Rails.application.routes.draw do
 
   root to: 'lotteries#index'
 
-  get '/fake' => 'lotteries#fake', as: 'fake', defaults: {format: :json}
+  namespace :benchmarks do
+    get 'task1'
+  end
 
 end

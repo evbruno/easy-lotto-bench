@@ -1,4 +1,6 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
+
+echo "Installing ruby. ARGS: $@"
 
 source $HOME/.rvm/scripts/rvm
 

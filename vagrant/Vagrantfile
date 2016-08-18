@@ -3,6 +3,10 @@
 
 $CurrentBox = (ENV['BOX_NAME'] || 'ubuntu').downcase
 $PortOffset = (ENV['BOX_PORT_OFFSET'] || 0).to_i
+$CPUS       = (ENV['BOX_NUM_OF_CPUS'] || 1).to_i.abs
+$Memory     = (ENV['BOX_MEM'] || 512).to_i
+$SkipNGINX  = !ENV['BOX_SKIP_NGINX'].nil?
+
 
 ENV['LC_ALL'] = 'en_US.UTF-8'
 
@@ -16,56 +20,64 @@ Vagrant.configure("2") do |config|
     bye_bye
   end
 
-  args_ok
-
   config.vm.provider 'virtualbox' do |vb|
-    vb.name = "easy-lotto-benchmark-#{$CurrentBox}"
-    vb.memory = "512"
-    vb.cpus = 1
+    vb.name = "easy-lotto-benchmark-v2-#{$CurrentBox}"
+    vb.memory = $Memory
+    vb.cpus = $CPUS
     # vb.gui = true
     # vb.customize ["modifyvm", :id, "--memory", "512"]
   end
 
+  args_ok
+
   config.vm.synced_folder '../', '/webapp', create: true, group: 'vagrant', owner: 'vagrant'
 
   # config.ssh.username = 'root'
-  config.ssh.password = 'vagrant'
+  # config.ssh.password = 'vagrant'
   config.ssh.insert_key = 'false'
 
   config.vm.network :forwarded_port, guest: 3000, host: ( 3000 + $PortOffset )
   config.vm.network :forwarded_port, guest: 5432, host: ( 5432 + $PortOffset )
+  config.vm.network :forwarded_port, guest: 8080, host: ( 8080 + $PortOffset )
 
-  #  the same for centos and ubuntu
-
-  config.vm.provision :shell, path: 'install-rvm.sh', args: 'stable', privileged: false
-  config.vm.provision :shell, path: 'install-ruby.sh', args: '2.3.0 rails -v 4.2.7', privileged: false
-  # config.vm.provision :shell, path: 'install-ruby.sh', args: '2.3.0', privileged: false
+  config.vm.provision :shell, path: './scripts/install-rvm.sh', args: 'stable', privileged: false
 
   if $CurrentBox == 'ubuntu'
-    config.vm.provision :shell, path: 'ubuntu.sh', privileged: true
-    # config.vm.provision :shell, inline: $FixLocale, privileged: false
-    # config.vm.provision :shell, inline: $FixLocale, privileged: true
-    config.vm.provision :shell, path: 'install-postgres-apt.sh', args: '9.5', privileged: true
+
+    config.vm.provision :shell, path: './scripts/install-ruby.sh', args: '2.3.0 rails -v 4.2.7', privileged: false
+    config.vm.provision :shell, path: './scripts/ubuntu.sh'
+    config.vm.provision :shell, path: './scripts/install-postgres-apt.sh', args: '9.5'
+
+    if !$SkipNGINX
+      config.vm.provision :shell, path: './scripts/install-nginx-apt.sh'
+    end
+
+    config.vm.provision :shell, path: './scripts/post-install.sh', args: '', privileged: false
+
   elsif $CurrentBox == 'centos'
-    config.vm.provision :shell, path: 'centos.sh', privileged: true
-    config.vm.provision :shell, path: 'install-postgres-yum.sh', privileged: true
+
+    config.vm.provision :shell, path: './scripts/install-ruby.sh', args: '2.3.0 rails:4.2.7', privileged: false
+
+    config.vm.provision :shell, path: './scripts/centos.sh'
+    config.vm.provision :shell, path: './scripts/install-postgres-yum.sh'
+
+    if !$SkipNGINX
+      config.vm.provision :shell, path: './scripts/install-nginx-yum.sh'
+    end
+
+    config.vm.provision :shell, path: './scripts/post-install.sh', args: 'pg -- --with-pg-config=/usr/pgsql-9.5/bin/pg_config', privileged: false
+
   end
 
 end
 
-$FixLocale = <<SCRIPT
-  if grep -Fq 'LC_CTYPE' ~/.bashrc; then
-    echo 'Locale already configured...'
-  else
-    echo "export LC_CTYPE=en_US.UTF-8" >> ~/.bashrc
-    echo "export LC_ALL=en_US.UTF-8" >> ~/.bashrc
-  fi
-SCRIPT
-
 def args_ok
   puts '--------------------------------'
-  puts " * BoxName    '#{$CurrentBox}' "
-  puts " * PortOffset #{$PortOffset} "
+  puts " * BoxName    : #{$CurrentBox} "
+  puts " * PortOffset : #{$PortOffset} "
+  puts " * CPUS       : #{$CPUS} "
+  puts " * Memory     : #{$Memory} Mb "
+  puts " * SkipNGINX  : #{$SkipNGINX} "
   puts '--------------------------------'
 end
 

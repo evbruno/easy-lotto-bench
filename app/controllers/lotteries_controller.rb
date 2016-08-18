@@ -1,20 +1,6 @@
 class LotteriesController < ApplicationController
   before_action :set_lottery, only: [:show, :edit, :update, :destroy]
 
-  def fake
-    request.format = :json
-
-    task = Lottery.all.map do |l|
-      h = Hash.new
-      h[:lottery] = l
-      h[:avg_value] = l.prizes.average(:value)
-      h[:min_number] = l.draws.minimum(:number)
-      h
-    end
-
-    render json: task
-  end
-
   # GET /lotteries
   # GET /lotteries.json
   def index

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "Installing RVM"
+
 if type rvm &> /dev/null ; then
   echo 'RVM already installed... exiting'
   exit 0

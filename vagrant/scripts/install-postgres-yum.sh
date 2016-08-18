@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
+PG_VERSION='9.5'
+
+echo "Installing postgresql-$PG_VERSION (yum)"
+
 if type psql &> /dev/null ; then
   echo 'PSQL already installed... exiting'
   exit 0
 fi
-
-# echo "Argument '$1' will be ignored..."
-PG_VERSION='9.5'
 
 # Adding PostgreSQL Yum Repository
 
@@ -27,7 +28,7 @@ systemctl enable "postgresql-$PG_VERSION"
 
 # Installing PG gem
 
-su - vagrant -c 'gem install pg -- --with-pg-config=/usr/pgsql-9.5/bin/pg_config'
+# su - vagrant -c 'gem install pg -- --with-pg-config=/usr/pgsql-9.5/bin/pg_config'
 
 # Dev only
 
@@ -45,5 +46,4 @@ echo 'host  all   all   0.0.0.0/0  trust' >> pg_hba.conf
 
 # restarting...
 
-systemctl stop "postgresql-$PG_VERSION"
-systemctl start "postgresql-$PG_VERSION"
+systemctl restart "postgresql-$PG_VERSION"

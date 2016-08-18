@@ -2,7 +2,7 @@
 
 PG_VERSION=$1
 
-echo "Installing postgresql-$PG_VERSION"
+echo "Installing postgresql-$PG_VERSION (apt)"
 
 if type psql &> /dev/null ; then
   echo 'PSQL already installed... exiting'
@@ -28,3 +28,5 @@ sed -i.bak "s/#listen_addresses.*=.*'.*'/listen_addresses='*'/g" postgresql.conf
 
 cp pg_hba.conf pg_hba.conf.orig
 echo 'host all all 0.0.0.0/0 trust' > pg_hba.conf
+
+/etc/init.d/postgresql restart
