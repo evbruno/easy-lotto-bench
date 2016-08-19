@@ -16,6 +16,7 @@ rpm -Uvh http://yum.postgresql.org/9.5/redhat/rhel-7-x86_64/pgdg-centos95-9.5-2.
 # Installing PostgreSQL Server
 
 yum install -y postgresql95-server postgresql95-devel postgresql95-contrib postgresql95 libpqxx-devel
+yum install -y postgresql-devel
 
 # Initializing PGDATA
 

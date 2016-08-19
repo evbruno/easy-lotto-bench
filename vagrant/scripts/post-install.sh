@@ -22,18 +22,19 @@ fi
 # else
 #   echo 'Secret key already exists!'
 # fi
+#
+# if [ $# -ge 1 ] ; then
+#   echo "Running gem install with $@"
+#   gem install $@
+# else
+#   echo "No arguments passed... Skipping 'gem install'"
+# fi
 
 cd /webapp
 
-if [ $# -ge 1 ] ; then
-  echo "Running gem install with $@"
-  gem install $@
-else
-  echo "No arguments passed... Skipping 'gem install'"
-fi
-
-bundle install
-rm -rf ./bundle
+rm -rf .bundle
+bundle install --quiet
+# bundle install --deployment --quiet
 RAILS_ENV=production rake db:migrate
 RAILS_ENV=production rake db:seed
 

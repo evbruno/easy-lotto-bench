@@ -11,16 +11,7 @@ fi
 # sudo su -c 'http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm'
 
 rpm -Uvh http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarch.rpm
-
-# Update everything, once more.
-
-# yum -y update
-
-# not sure if we need this
-# yum groupinstall -y development
-
-# NodeJS
-# curl --silent --location https://rpm.nodesource.com/setup_4.x | bash -
+yum -y update
 
 yum install -y nodejs git vim htop
 

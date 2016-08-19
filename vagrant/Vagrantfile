@@ -7,7 +7,6 @@ $CPUS       = (ENV['BOX_NUM_OF_CPUS'] || 1).to_i.abs
 $Memory     = (ENV['BOX_MEM'] || 512).to_i
 $SkipNGINX  = !ENV['BOX_SKIP_NGINX'].nil?
 
-
 ENV['LC_ALL'] = 'en_US.UTF-8'
 
 Vagrant.configure("2") do |config|
@@ -52,7 +51,6 @@ Vagrant.configure("2") do |config|
       config.vm.provision :shell, path: './scripts/install-nginx-apt.sh'
     end
 
-    config.vm.provision :shell, path: './scripts/post-install.sh', args: '', privileged: false
 
   elsif $CurrentBox == 'centos'
 
@@ -65,9 +63,10 @@ Vagrant.configure("2") do |config|
       config.vm.provision :shell, path: './scripts/install-nginx-yum.sh'
     end
 
-    config.vm.provision :shell, path: './scripts/post-install.sh', args: 'pg -- --with-pg-config=/usr/pgsql-9.5/bin/pg_config', privileged: false
-
   end
+
+  # config.vm.provision :shell, path: './scripts/post-install.sh', args: 'pg -- --with-pg-config=/usr/pgsql-9.5/bin/pg_config', privileged: false
+  config.vm.provision :shell, path: './scripts/post-install.sh', args: '', privileged: false
 
 end
 

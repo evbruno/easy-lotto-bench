@@ -38,6 +38,5 @@ EOL
 
 rm /etc/nginx/conf.d/default.conf
 
-systemctl stop nginx
-systemctl start nginx
+systemctl restart nginx
 systemctl enable nginx

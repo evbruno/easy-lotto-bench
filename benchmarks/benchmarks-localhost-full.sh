@@ -7,41 +7,46 @@
 # BENCHMARK_REQUESTS=16000
 # BENCHMARK_CONCURRENCY=(1 2 4 8 16 24)
 
-BRANCHES=('master' 'puma-1w')
-VMS=('centos' 'ubuntu')
+BRANCHES=('master')
+VMS=('centos')
 BENCHMARK_REQUESTS=100
 BENCHMARK_CONCURRENCY=(1)
 
-SERVER_URL="http://localhost:3000"
+SERVER_URL="http://localhost:8090/"
 
 #######################################
 
 ORIGINAL_DIR=$(pwd)
 
-bench_dir() {
+vagrant_dir() {
+  cd "$ORIGINAL_DIR/../vagrant"
+}
+
+benchmark_dir() {
   cd $ORIGINAL_DIR
 }
 
 start_vm() {
   vm=$1
   echo "Booting VM: $vm"
-  cd ../vagrant
+  vagrant_dir
   eval "./up-$vm.sh"
-  bench_dir
+  benchmark_dir
 }
 
 stop_vm() {
   vm=$1
   echo "Shutting down VM: $vm"
-  cd ../vagrant
+  vagrant_dir
   eval "./down-$vm.sh"
-  bench_dir
+  benchmark_dir
 }
 
 benchmark() {
   for concurrency in  ${BENCHMARK_CONCURRENCY[@]}; do
+    # cmd="ab -n $BENCHMARK_REQUESTS -c $concurrency $SERVER_URL/benchmark/task1"
     cmd="ab -n $BENCHMARK_REQUESTS -c $concurrency $SERVER_URL/benchmark/task1"
-    echo "Benchmaring: $cmd"
+    echo "Benchmarking: $cmd"
     eval $cmd
   done
 }
@@ -52,7 +57,16 @@ main() {
     start_vm $vm
 
     for branch in ${BRANCHES[@]} ; do
-      echo "    branch: $branch"
+      cd "$ORIGINAL_DIR/.."
+      echo "    branch: $branch $(pwd)"
+
+      cap production deploy
+      cap production easy:start
+
+      benchmark
+
+      cap production easy:stop
+
     done
 
     stop_vm $vm
