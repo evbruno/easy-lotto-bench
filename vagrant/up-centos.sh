@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 export BOX_NAME='centos'
-export BOX_PORT_OFFSET=0
+export BOX_PORT_OFFSET=10
 export BOX_NUM_OF_CPUS=1
 export BOX_MEM=512
 

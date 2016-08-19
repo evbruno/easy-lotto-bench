@@ -11,21 +11,17 @@ else
   echo "Socket directory already exists: $SHARED_SOCKET_DIR"
 fi
 
-if [ -z "$SECRET_KEY_BASE" ] ; then
-
-  if grep -q 'export SECRET_KEY_BASE' ~/.bashrc ; then
-    echo 'Your key is already set to your ~/.bashrc file. Please, run your bash (login) again...'
-  else
-    _SECRET=$(RAILS_ENV=production rake secret)
-    echo "export SECRET_KEY_BASE=$_SECRET" >> ~/.bashrc
-    echo "Your secret key is set to your file ~/.bashrc file. Please, run your bash (login) again..."
-  fi
-
-else
-
-  echo 'Secret key already exists!'
-
-fi
+# if [ -z "$SECRET_KEY_BASE" ] ; then
+#   if grep -q 'export SECRET_KEY_BASE' ~/.bashrc ; then
+#     echo 'Your key is already set to your ~/.bashrc file. Please, run your bash (login) again...'
+#   else
+#     _SECRET=$(RAILS_ENV=production rake secret)
+#     echo "export SECRET_KEY_BASE=$_SECRET" >> ~/.bashrc
+#     echo "Your secret key is set to your file ~/.bashrc file. Please, run your bash (login) again..."
+#   fi
+# else
+#   echo 'Secret key already exists!'
+# fi
 
 cd /webapp
 
@@ -37,5 +33,8 @@ else
 fi
 
 bundle install
+rm -rf ./bundle
+RAILS_ENV=production rake db:migrate
+RAILS_ENV=production rake db:seed
 
 echo "Yeyyyy! App is ready ! (= "
