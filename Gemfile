@@ -28,7 +28,7 @@ group :development do
   # gem 'capistrano3-puma',   require: false
 end
 
-# gem 'thin'
+gem 'thin'
 # gem 'puma', '~> 3.6.0'
 # gem 'unicorn','~> 5.1.0'
 # gem 'passenger', '~> 5.0.30', require: 'phusion_passenger/rack_handler'
