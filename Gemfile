@@ -29,6 +29,6 @@ group :development do
 end
 
 # gem 'thin'
-gem 'puma', '~> 3.6.0'
-# gem 'unicorn','~> 5.1.0'
+# gem 'puma', '~> 3.6.0'
+gem 'unicorn','~> 5.1.0'
 # gem 'passenger', '~> 5.0.30', require: 'phusion_passenger/rack_handler'
