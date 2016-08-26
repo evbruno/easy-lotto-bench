@@ -18,3 +18,5 @@
 
 .vagrant
 vendor/bundle
+
+.data*
