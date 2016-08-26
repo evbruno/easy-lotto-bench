@@ -5,42 +5,53 @@ namespace :easy do
 
   include Benchmarker
 
+  # BRANCHES = %w(master thin puma-w1 puma-w2)
+  BRANCHES = %w(master unicorn unicorn-w2)
+
   desc "Fire benchmark"
   task benchmark: :environment do
-    b = Benchmarker::EasyBenchmark.new
 
-    b.branches.each { |branch|
+    BRANCHES.each do |branch|
+      b = Benchmarker::EasyBenchmark.new branch
+
+      b.cap_deploy
       b.run_tasks
-    }
+      b.cap_stop
+    end
 
   end
 
   desc "Generate file reports"
   task report: :environment do
-    b = Benchmarker::EasyBenchmark.new
-    parsed = Hash.new()
 
-    b.log_files.each do |file|
-      res = b.extract_results file
-      puts "File: #{file}"
-      pp res
 
-      m = /.*\/results_c([0-9]+).*/.match file
-      conc = m.captures[0].to_i
+    BRANCHES.each do |branch|
+      b = Benchmarker::EasyBenchmark.new branch
+      parsed = Hash.new()
 
-      parsed[conc] = res[:requests_per_second]
-    end
+      b.log_files.each do |file|
+        res = b.extract_results file
+        puts "File: #{file}"
+        pp res
 
-    pp parsed
+        m = /.*\/results_c([0-9]+).*/.match file
+        conc = m.captures[0].to_i
 
-    reports_file = "#{b.output_dir}/#{b.profile}.dat"
-
-    File.open(reports_file, 'w') do |file|
-      parsed.sort.to_h.each_pair do |key, value|
-        file.write "#{key}  #{value || 0}\n"
+        parsed[conc] = res[:requests_per_second]
       end
+
+      pp parsed
+
+      reports_file = "#{b.output_dir}/#{branch}.dat"
+
+      File.open(reports_file, 'w') do |file|
+        parsed.sort.to_h.each_pair do |key, value|
+          file.write "#{key}  #{value || 0}\n"
+        end
+      end
+      puts "#{reports_file} done."
     end
-    puts "#{reports_file} done."
+
   end
 
 end

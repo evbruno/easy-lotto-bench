@@ -1,8 +1,8 @@
 module Benchmarker
 
-  BRANCHES              = %w(puma)
   BENCHMARK_CONCURRENCY = 1..24
   BENCHMARK_REQUESTS    = 1000
+  REQUEST_TIME          = '30s'
 
   CONTAINER_PORT        = 8080
   SERVER_URL            = "http://127.0.0.1:#{CONTAINER_PORT}"
@@ -12,28 +12,24 @@ module Benchmarker
 
     @@regex_num = '[\d]*\.?[\d]+'
 
-    attr_reader :profile
+    attr_reader :branch_name
 
-    def initialize
-      @profile = ENV['PROFILE']
+    def initialize branch
+      @branch_name = branch
 
-      if @profile.nil? || @profile.empty?
-        abort "Invalid arguments... missing $PROFILE"
+      if @branch_name.nil? || @branch_name.empty?
+        abort "Invalid arguments... missing `branch` argument"
       end
 
-      puts "Benchmarker::EasyBenchmark #{@profile}"
-      puts " ... pwd = #{Dir.pwd}"
-    end
-
-    def branches
-      BRANCHES
+      puts "Benchmarker::EasyBenchmark #{@branch_name}"
+      puts " .. pwd = #{Dir.pwd}"
     end
 
     def output_dir
-      out = "#{OUTPUT_DIR}-#{@profile}"
+      out = "#{OUTPUT_DIR}-#{@branch_name}"
 
       if ! Dir.exists? out
-        puts " ... creating dir: [#{out}]"
+        puts " .. creating dir: [#{out}]"
         Dir.mkdir out
       end
 
@@ -83,12 +79,13 @@ module Benchmarker
       ret
     end
 
-    def execute cmd
-      puts "Running: #{cmd}"
+    def execute cmd, sleep_for = 16
+      puts "> Running: #{cmd}"
       puts `#{cmd}`
       if !$?.success?
         abort "Error: #{$?}"
       end
+      sleep sleep_for
     end
 
     def run_tasks
@@ -99,9 +96,8 @@ module Benchmarker
       BENCHMARK_CONCURRENCY.each do |c|
         t = c < 8 ? c : 8
         output = "#{output_dir}/results_c#{c}_task1.log"
-        cmd = "wrk -t#{t} -c#{c} -d10s #{SERVER_URL}/benchmarks/task1 | tee #{output}"
+        cmd = "wrk -t#{t} -c#{c} -d#{REQUEST_TIME} #{SERVER_URL}/benchmarks/task1 | tee #{output}"
         execute cmd
-        sleep 20
       end
     end
 
@@ -110,8 +106,31 @@ module Benchmarker
         output = "#{output_dir}/results_c#{c}_task1.log"
         cmd = "ab -n #{BENCHMARK_REQUESTS} -c #{c} #{SERVER_URL}/benchmarks/task1 | tee #{output}"
         execute cmd
-        sleep 20
       end
+    end
+
+    def cap_deploy
+      raw_branch = @branch_name
+      start_cmd = nil
+
+      matching = /^(puma|unicorn)(\-w([\d]+))?$/.match @branch_name
+      if matching
+        raw_branch = matching.captures[0]
+        workers = matching.captures[2] || 1
+        puts " .. deploying #{raw_branch} w: #{workers}"
+        start_cmd = "cap production easy:start_#{raw_branch} WORKERS=#{workers}"
+      else
+        puts " .. deploying #{@branch_name}"
+        start_cmd = "cap production easy:start"
+      end
+
+      execute "cap production deploy BRANCH=#{raw_branch}", 1
+      execute start_cmd, 20
+    end
+
+    def cap_stop
+      puts " .. cap stop #{@branch_name}"
+      execute "cap production easy:stop"
     end
 
   end
