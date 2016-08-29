@@ -28,6 +28,10 @@ group :development do
   # gem 'capistrano3-puma',   require: false
 end
 
+group :development do
+  gem 'sqlite3'
+end
+
 # gem 'thin'
 # gem 'puma', '~> 3.6.0'
 gem 'unicorn','~> 5.1.0'
