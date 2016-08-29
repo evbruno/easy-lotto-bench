@@ -23,8 +23,5 @@ test:
 production:
   adapter: postgresql
   encoding: unicode
-  host: localhost
-  database: postgres
-  pool: 5
-  username: postgres
-  password:
+  pool: 15
+  url: <%= ENV['DATABASE_URL'] %>
