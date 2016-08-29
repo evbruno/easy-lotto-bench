@@ -38,7 +38,7 @@ namespace :easy do
   task :start_puma_socket do
     on roles :all do
       info "Starting Puma (socket) workers: #{workers}"
-      invoke "easy:bundle_exec", "puma -d -w #{workers} -t 32 -e production -b unix:///var/run/shared/easy-lotto.sock --pidfile #{fetch(:server_pid)}"
+      invoke "easy:bundle_exec", "puma -d -w #{workers} -t 32 -e production -b unix:///var/run/shared/easy-lotto.sock -S /var/run/shared/puma.state --pidfile #{fetch(:server_pid)}"
     end
   end
 
@@ -46,7 +46,15 @@ namespace :easy do
   task :start_puma do
     on roles :all do
       info "Starting Puma (socket) workers: #{workers}"
-      invoke "easy:bundle_exec", "puma -d -w #{workers} -t 32 -e production -p 8080 --pidfile #{fetch(:server_pid)}"
+      invoke "easy:bundle_exec", "puma -d -w #{workers} -t 32 -e production -b tcp://0.0.0.0:8080 -S /var/run/shared/puma.state  --pidfile #{fetch(:server_pid)}"
+    end
+  end
+
+  desc "Start Passenger"
+  task :start_passenger do
+    on roles :all do
+      info "Starting Passenger"
+      invoke "easy:bundle_exec",  "passenger start -d -p 8080 -e production --pid-file #{fetch(:server_pid)}"
     end
   end
 
@@ -76,7 +84,9 @@ namespace :easy do
         if test("[ -e #{fetch(:server_pid)} ]")
           if test("kill -0 #{pid}")
             info "stopping rails server..."
-            execute :kill, "-s QUIT", pid
+            execute :kill, "-s TERM", pid
+            # execute :kill, "-s QUIT", pid
+            execute :rm, "-rf", "/var/run/shared/*"
           else
             info "cleaning up dead server pid..."
             execute :rm, fetch(:server_pid)
@@ -87,6 +97,20 @@ namespace :easy do
       end
     end
   end
+
+  desc "Is Running ?"
+  task :is_running do
+     on roles :all do
+      within current_path do
+        if test("! curl -q 'http://localhost:8080/benchmarks/task1' &> /dev/null")
+          error "ISN'T Running !!!"
+        else
+          info "IS Running !!!"
+        end
+      end
+    end
+  end
+
 
   desc "Show server status"
   task :status do
