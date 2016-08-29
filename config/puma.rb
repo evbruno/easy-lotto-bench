@@ -1,5 +1,5 @@
-threads 8, 32
-workers (ENV['WORKERS'] || 1).to_i
+threads 32, 32
+workers 1
 preload_app!
 
 environment 'production'
