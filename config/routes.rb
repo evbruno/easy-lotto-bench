@@ -7,6 +7,7 @@ Rails.application.routes.draw do
 
   namespace :benchmarks do
     get 'task1'
+    get 'task2'
   end
 
 end
