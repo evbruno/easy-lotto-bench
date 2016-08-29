@@ -1,6 +1,6 @@
 class BenchmarksController < ApplicationController
 
-  # task1: execute 22 queries, renders json
+  # task1: execute a lot of queries, renders json
   def task1
     request.format = :json
 
@@ -15,9 +15,9 @@ class BenchmarksController < ApplicationController
     render json: task
   end
 
-  # TODO
-  # task2: execute query, render (embedded) html
-  # task3: execute 1 insert, render json
-  # task4: static content (css)
+  def task2
+    @lotteries = Lottery.all
+    render 'lotteries/index'
+  end
 
 end

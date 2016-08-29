@@ -1,4 +1,5 @@
 require 'matrix'
+require 'fileutils'
 
 module Benchmarker
 
@@ -9,6 +10,7 @@ module Benchmarker
   CONTAINER_PORT        = 8080
   SERVER_URL            = "http://127.0.0.1:#{CONTAINER_PORT}"
   OUTPUT_DIR            = '.benchmarks/data'
+  AVAILABLE_TASKS       = 2
 
   class EasyBenchmark
 
@@ -31,6 +33,7 @@ module Benchmarker
       if ! Dir.exists? out
         puts " .. creating dir: [#{out}]"
         Dir.mkdir out
+        FileUtils.mkdir_p out
       end
 
       out
@@ -55,6 +58,14 @@ module Benchmarker
         output = "#{output_dir}/results_c#{c}_task1.log"
         cmd = "wrk -t#{t} -c#{c} -d#{REQUEST_TIME} #{SERVER_URL}/benchmarks/task1 | tee #{output}"
         execute cmd
+
+        1.upto(AVAILABLE_TASKS) do | task |
+
+          output = "#{output_dir}/results_c#{c}_task#{task}.log"
+          cmd = "wrk -t#{t} -c#{c} -d#{REQUEST_TIME} #{SERVER_URL}/benchmarks/task#{task} | tee #{output}"
+          execute cmd
+
+        end
       end
     end
 
@@ -76,6 +87,9 @@ module Benchmarker
         workers = matching.captures[2] || 1
         puts " .. deploying #{raw_branch} w: #{workers}"
         start_cmd = "cap production easy:start_#{raw_branch} WORKERS=#{workers}"
+      elsif @branch_name == 'passenger'
+        puts " .. deploying #{@branch_name}"
+        start_cmd = "cap production easy:start_passenger"
       else
         puts " .. deploying #{@branch_name}"
         start_cmd = "cap production easy:start"
@@ -83,6 +97,16 @@ module Benchmarker
 
       execute "cap production deploy BRANCH=#{raw_branch}", 1
       execute start_cmd, 20
+
+      cmd = "curl -q 'http://localhost:8081/benchmarks/task1' &> /dev/null"
+      puts `#{cmd}`
+      if !$?.success?
+        puts "ISN'T Running !!!"
+        puts " >>> Trying to stop/start once more..."
+
+        cap_stop
+        execute start_cmd, 20
+      end
     end
 
     def cap_stop
