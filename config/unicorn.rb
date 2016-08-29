@@ -16,7 +16,7 @@ stdout_path "#{app_dir}/log/unicorn.stderr.log"
 # listen "0.0.0.0:8080", :tcp_nopush => true
 
 # Number of processes
-worker_processes 2
+worker_processes 3
 
 # Time-out
 timeout 30
