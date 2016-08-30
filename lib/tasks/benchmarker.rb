@@ -5,11 +5,9 @@ module Benchmarker
 
   BENCHMARK_CONCURRENCY = 1..24
   BENCHMARK_REQUESTS    = 1000
-  REQUEST_TIME          = '30s'
-
-  CONTAINER_PORT        = 8080
-  SERVER_URL            = "http://127.0.0.1:#{CONTAINER_PORT}"
-  OUTPUT_DIR            = '.benchmarks/data'
+  REQUEST_TIME          = ENV['REQUEST_TIME'] || '30s'
+  SERVER_URL            = ENV['SERVER_URL']   || 'http://127.0.0.1:8080'
+  OUTPUT_DIR            = ENV['OUTPUT_DIR']   || '.benchmarks/data'
   AVAILABLE_TASKS       = 2
 
   class EasyBenchmark
@@ -32,7 +30,6 @@ module Benchmarker
 
       if ! Dir.exists? out
         puts " .. creating dir: [#{out}]"
-        Dir.mkdir out
         FileUtils.mkdir_p out
       end
 
@@ -55,9 +52,6 @@ module Benchmarker
     def run_tasks_with_wrk
       BENCHMARK_CONCURRENCY.each do |c|
         t = c < 8 ? c : 8
-        output = "#{output_dir}/results_c#{c}_task1.log"
-        cmd = "wrk -t#{t} -c#{c} -d#{REQUEST_TIME} #{SERVER_URL}/benchmarks/task1 | tee #{output}"
-        execute cmd
 
         1.upto(AVAILABLE_TASKS) do | task |
 
@@ -204,6 +198,11 @@ module Benchmarker
         puts "|"
       end
 
+    end
+
+    def push_branch
+      cmd = "git push -f heroku #{@branch_name}:master"
+      execute cmd, 50
     end
 
     def self.gen_markdown_table_without_conc parsed_all
