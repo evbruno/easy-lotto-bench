@@ -2,7 +2,7 @@
 
 **This is a spike project only. These results SHOULD NOT be considered as accurate**
 
-## Running againsta Heroku
+## Running against Heroku
 
 ### benchmarks/task1 (wrk)
 
