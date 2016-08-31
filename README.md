@@ -6,6 +6,8 @@
 
 ### benchmarks/task1 (wrk)
 
+![benchmark heroku wrk task 1](.benchmarks/heroku_wrk_task1.png)
+
 |    conc.   |   master   |    thin    |    puma    |   puma-w2  |   puma-w3  |   puma-w4  |   unicorn  | unicorn-w2 | unicorn-w3 | unicorn-w4 |  passenger |
 |------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|
 |      1     |    3.29    |    2.36    |    4.45    |    2.52    |    4.12    |    4.26    |    2.26    |    2.13    |    2.10    |    2.19    |    4.22    |
@@ -40,6 +42,8 @@
 |     30     |    15.48   |    21.89   |    32.90   |    31.46   |    52.60   |    63.89   |    20.66   |    27.57   |    32.29   |    26.24   |    61.71   |
 
 ### benchmarks/task2 (wrk)
+
+![benchmark heroku wrk task 2](.benchmarks/heroku_wrk_task2.png)
 
 |    conc.   |   master   |    thin    |    puma    |   puma-w2  |   puma-w3  |   puma-w4  |   unicorn  | unicorn-w2 | unicorn-w3 | unicorn-w4 |  passenger |
 |------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|------------|
