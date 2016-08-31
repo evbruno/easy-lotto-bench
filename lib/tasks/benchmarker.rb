@@ -3,12 +3,13 @@ require 'fileutils'
 
 module Benchmarker
 
-  BENCHMARK_CONCURRENCY = 1..24
-  BENCHMARK_REQUESTS    = 1000
+  BENCHMARK_CONCURRENCY = 1..30
+  BENCHMARK_REQUESTS    = (ENV['REQUEST_TIME'] || 1000).to_i
   REQUEST_TIME          = ENV['REQUEST_TIME'] || '30s'
   SERVER_URL            = ENV['SERVER_URL']   || 'http://127.0.0.1:8080'
   OUTPUT_DIR            = ENV['OUTPUT_DIR']   || '.benchmarks/data'
   AVAILABLE_TASKS       = 2
+  TASK_TO_REPORT        = ENV['TASK'] || '1'
 
   class EasyBenchmark
 
@@ -37,7 +38,7 @@ module Benchmarker
     end
 
     def execute cmd, sleep_for = 16
-      puts "> Running: #{cmd}"
+      puts "> Running: #{cmd} (sleeping: #{sleep_for})"
       puts `#{cmd}`
       if !$?.success?
         abort "Error: #{$?}"
@@ -65,9 +66,12 @@ module Benchmarker
 
     def run_tasks_with_ab
       BENCHMARK_CONCURRENCY.each do |c|
-        output = "#{output_dir}/results_c#{c}_task1.log"
-        cmd = "ab -n #{BENCHMARK_REQUESTS} -c #{c} #{SERVER_URL}/benchmarks/task1 | tee #{output}"
-        execute cmd
+        1.upto(AVAILABLE_TASKS) do | task |
+
+          output = "#{output_dir}/results_c#{c}_task#{task}.log"
+          cmd = "ab -n #{BENCHMARK_REQUESTS} -c #{c} #{SERVER_URL}/benchmarks/task#{task} | tee #{output}"
+          execute cmd
+        end
       end
     end
 
@@ -111,7 +115,7 @@ module Benchmarker
     ### reports
 
     def log_files
-      Dir["#{output_dir}/*.log"]
+      Dir["#{output_dir}/*task#{TASK_TO_REPORT}.log"]
     end
 
     def extract_results file_name
@@ -202,7 +206,9 @@ module Benchmarker
 
     def push_branch
       cmd = "git push -f heroku #{@branch_name}:master"
-      execute cmd, 50
+      execute cmd, 30
+      cmd = "curl #{SERVER_URL}/benchmarks/task1"
+      execute cmd, 5
     end
 
     def self.gen_markdown_table_without_conc parsed_all

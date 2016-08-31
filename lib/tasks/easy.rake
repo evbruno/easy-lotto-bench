@@ -6,6 +6,8 @@ namespace :easy do
   include Benchmarker
 
   BRANCHES = %w(master thin puma puma-w2 puma-w3 puma-w4 unicorn unicorn-w2 unicorn-w3 unicorn-w4 passenger)
+  # BRANCHES = %w(master thin puma puma-w2 puma-w3 puma-w4 unicorn)
+  # BRANCHES = %w(master thin puma puma-w2 unicorn unicorn-w2 passenger)
 
   desc "Fire benchmark"
   task benchmark: :environment do
@@ -38,16 +40,33 @@ namespace :easy do
 
   end
 
-  desc "Fire benchmark on Heroku"
+  desc "Fire benchmark on Heroku (wrk)"
   task bench_heroku: :environment do
 
     start = Time.now
 
     BRANCHES.each do |branch|
       b = EasyBenchmark.new branch
-
       b.push_branch
       b.run_tasks
+    end
+
+    puts
+    puts "> Finished !"
+    puts "> Took #{Time.now - start} seconds..."
+    puts
+
+  end
+
+  desc "Fire benchmark on Heroku (ab)"
+  task bench_ab_heroku: :environment do
+
+    start = Time.now
+
+    BRANCHES.each do |branch|
+      b = EasyBenchmark.new branch
+      b.push_branch
+      b.run_tasks_with_ab
     end
 
     puts
