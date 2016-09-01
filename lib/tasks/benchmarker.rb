@@ -146,6 +146,20 @@ module Benchmarker
       ret
     end
 
+    def parse_results
+      parsed = Hash.new()
+
+      log_files.each do |file|
+        res = extract_results file
+        puts "File: #{file}"
+        conc = (file[/.*\/results_c([0-9]+).*/, 1]).to_i
+
+        parsed[conc] = res[:requests_per_second]
+      end
+
+      parsed.sort.to_h
+    end
+
     def extract_results_for_ab file_name
       text = File.read file_name
       ret = Hash.new()
@@ -158,11 +172,11 @@ module Benchmarker
       ret
     end
 
-    def parse_results
+    def parse_results_ab
       parsed = Hash.new()
 
       log_files.each do |file|
-        res = extract_results file
+        res = extract_results_for_ab file
         puts "File: #{file}"
         conc = (file[/.*\/results_c([0-9]+).*/, 1]).to_i
 

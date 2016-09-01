@@ -22,7 +22,7 @@ namespace :easy do
 
   end
 
-  desc "Generate file reports"
+  desc "Generate file reports (using wrk)"
   task report: :environment do
 
     parsed_all = Hash.new
@@ -30,6 +30,24 @@ namespace :easy do
     BRANCHES.each do |branch|
       b = EasyBenchmark.new branch
       parsed = b.parse_results
+      parsed_all[branch] = parsed
+
+      reports_file = "#{b.output_dir}/#{branch}.dat"
+      b.write_result reports_file, parsed
+    end
+
+    EasyBenchmark.gen_markdown_table parsed_all
+
+  end
+
+  desc "Generate file reports (using ab)"
+  task report_ab: :environment do
+
+    parsed_all = Hash.new
+
+    BRANCHES.each do |branch|
+      b = EasyBenchmark.new branch
+      parsed = b.parse_results_ab
       parsed_all[branch] = parsed
 
       reports_file = "#{b.output_dir}/#{branch}.dat"

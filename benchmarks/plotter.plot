@@ -1,7 +1,7 @@
-set title "Heroku benchmark (wrk) task1" font ",16" tc rgb "#000000"
-set output "heroku_wrk_task1.png"
-
+set output "heroku_ab_task2.png"
 set terminal pngcairo size 1024,768 enhanced font 'Verdana,10'
+
+set title "Heroku benchmark (ab) task2" font ",16" tc rgb "#000000"
 
 set xlabel "Concurrency" font ",14" tc rgb "#606060"
 set ylabel "Requests / Sec" font ",14" tc rgb "#606060"
@@ -12,13 +12,12 @@ set key outside top nobox font ",14" tc rgb "#000000"
 set xtics 2
 
 # task1
-set yrange[0:70]
-set ytics 5
+# set yrange[0:70]
+# set ytics 5
 
 # task2
-#set yrange[0:130]
-#set ytics 10
-
+set yrange[0:130]
+set ytics 10
 
 set xrange[1:30]
 
