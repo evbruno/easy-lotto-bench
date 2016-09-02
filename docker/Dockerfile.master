@@ -1,0 +1,28 @@
+FROM postgres:9.5.4
+
+RUN apt-get update && apt-get install -y curl git libpq-dev vim nodejs nmon htop
+RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+RUN /bin/bash -l -c "curl -sSL https://get.rvm.io | bash -s stable"
+RUN /bin/bash -l -c "rvm install 2.3.0"
+RUN /bin/bash -l -c "rvm use 2.3.0 --default"
+RUN /bin/bash -l -c "ruby -v"
+RUN /bin/bash -l -c "gem install bundler"
+RUN /bin/bash -l -c "gem install rails -v 4.2.7.1"
+RUN echo 'source /etc/profile.d/rvm.sh' >> ~/.bashrc
+
+ENV RAILS_ENV production
+ENV DATABASE_URL 'postgres://postgres:@localhost:5432/postgres'
+
+ENV GEM_HOME /usr/local/rvm/gems/ruby-2.3.0
+ENV GEM_PATH /usr/local/rvm/gems/ruby-2.3.0:/usr/local/rvm/gems/ruby-2.3.0@global
+ENV PATH "$PATH:/usr/local/rvm/gems/ruby-2.3.0/bin"
+ENV PATH "$PATH:/usr/local/rvm/gems/ruby-2.3.0@global/bin"
+ENV PATH "$PATH:/usr/local/rvm/rubies/ruby-2.3.0/bin"
+ENV PATH "$PATH:/usr/local/rvm/bin"
+
+COPY . /webapp
+
+WORKDIR /webapp
+RUN rm -rf .bundle
+RUN bundle install --quiet --without development test
+
