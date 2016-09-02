@@ -1,4 +1,4 @@
-+# Easy Lotto Benchmarks
+# Easy Lotto Benchmarks
 
 **This is a spike project only. These results SHOULD NOT be considered as accurate**
 
